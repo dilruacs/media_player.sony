@@ -177,7 +177,7 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
         try:
             self.sonydevice.update_service_urls()
             self.update()
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             self._state = STATE_OFF
 
     def update(self):
