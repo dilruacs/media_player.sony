@@ -256,12 +256,12 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
 
     def media_play(self):
         """Send play command."""
-        self._state = STATE_PLAYING
+        self._playing = True
         self.sonydevice.play()
 
     def media_pause(self):
         """Send media pause command to media player."""
-        self._state = STATE_PAUSED
+        self._playing = False
         self.sonydevice.pause()
 
     def media_next_track(self):
@@ -274,4 +274,5 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
 
     def media_stop(self):
         """Send stop command."""
+        _LOGGER.debug(self.sonydevice.commands)
         self.sonydevice.stop()
