@@ -114,7 +114,6 @@ def request_configuration(config, hass, add_devices):
 
     def sony_configuration_callback(data):
         """Handle the entry of user PIN."""
-
         from sonyapilib.device import SonyDevice, AuthenicationResult
 
         pin = data.get('pin')
@@ -156,11 +155,12 @@ def request_configuration(config, hass, add_devices):
 
 
 class SonyMediaPlayerDevice(MediaPlayerDevice):
-    """Representation of a Sony mediaplayer"""
+    """Representation of a Sony mediaplayer."""
 
     def __init__(self, host, name, pin, mac=None):
         """
         Initialize the Sony mediaplayer device.
+
         Mac address is optional but neccessary for wake on LAN
         """
         from sonyapilib.device import SonyDevice
