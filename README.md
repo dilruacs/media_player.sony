@@ -1,3 +1,5 @@
+![Travis-CI](https://travis-ci.org/dilruacs/media_player.sony.svg?branch=master)
+
 # media_player.sony
 
 ## Getting Started
