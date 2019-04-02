@@ -19,7 +19,9 @@ import homeassistant.helpers.config_validation as cv
 
 from homeassistant.util.json import load_json, save_json
 
-REQUIREMENTS = ['sonyapilib==0.3.10']
+VERSION = '0.1.0'
+
+REQUIREMENTS = ['sonyapilib==0.3.11']
 
 SONY_CONFIG_FILE = 'sony.conf'
 
