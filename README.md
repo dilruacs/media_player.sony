@@ -9,10 +9,6 @@ This is a limitation of the Sony Firmware, the device will not react properly to
 
 ## Getting Started
 
-The `sonyapilib` library is required, install it in the same environment as the Home Assistant software:
-
-`pip install sonyapilib`
-
 To get started put `/custom_components/sony/media_player.py` here: `<config_directory>/custom_components/sony/media_player.py`
 
 **Using custom_updater (optional)**
