@@ -15,7 +15,7 @@ The `sonyapilib` library is required, install it in the same environment as the 
 
 To get started put `/custom_components/sony/media_player.py` here: `<config_directory>/custom_components/sony/media_player.py`
 
-## Using custom_updater
+**Using custom_updater (optional)**
 
 - Get and install `custom_updater` from here: https://github.com/custom-components/custom_updater
 - Use the following configuration snippet:
