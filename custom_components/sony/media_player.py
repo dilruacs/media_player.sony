@@ -12,7 +12,7 @@ from homeassistant.components.media_player import (
     MediaPlayerDevice, PLATFORM_SCHEMA)
 from homeassistant.components.media_player.const import (
     SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK, SUPPORT_TURN_ON,
-    SUPPORT_TURN_OFF, SUPPORT_PLAY,SUPPORT_PLAY_MEDIA, SUPPORT_STOP)
+    SUPPORT_TURN_OFF, SUPPORT_PLAY, SUPPORT_PLAY_MEDIA, SUPPORT_STOP)
 from homeassistant.const import (CONF_HOST, CONF_NAME, STATE_OFF, STATE_ON,
     STATE_PLAYING, STATE_PAUSED)
 import homeassistant.helpers.config_validation as cv
@@ -155,7 +155,6 @@ def request_configuration(config, hass, add_devices):
     )
 
 
-
 class SonyMediaPlayerDevice(MediaPlayerDevice):
     """Representation of a Sony mediaplayer"""
 
@@ -198,7 +197,7 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
                 if power_status:
                     playback_info = self.sonydevice.get_playing_status()
                     if playback_info == "PLAYING":
-                         self._state = STATE_PLAYING
+                        self._state = STATE_PLAYING
                     elif playback_info == "PAUSED_PLAYBACK":
                         self._state = STATE_PAUSED
                     else:
@@ -231,6 +230,7 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
         # the device used for testing does not send any
         # information about the media which is played
         return ""
+
     @property
     def media_content_id(self):
         """Content ID of current playing media."""
