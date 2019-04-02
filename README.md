@@ -21,7 +21,7 @@ custom_updater:
   track:
     - components
   component_urls:
-    - https://raw.githubusercontent.com/dilruacs/media_player.sony/master/custom_components.json
+    - https://raw.githubusercontent.com/dilruacs/media_player.sony/master/tracker.json
 ```
 
 ## Configuration
