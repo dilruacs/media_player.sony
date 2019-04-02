@@ -38,7 +38,7 @@ media_player:
     host: 192.168.0.10
 ```
 
-** Configuration variables **
+**Configuration variables**
 
 key | description
 :--- | :---
