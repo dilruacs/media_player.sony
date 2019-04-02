@@ -249,7 +249,6 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
 
     def media_play_pause(self):
         """Simulate play pause media player."""
-        _LOGGER.debug(self.sonydevice.commands)
         if self._playing:
             self.media_pause()
         else:
