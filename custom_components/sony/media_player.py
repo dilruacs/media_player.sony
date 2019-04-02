@@ -2,7 +2,7 @@
 Support for interface with a Sony MediaPlayer TV.
 
 For more details about this platform, please refer to the documentation at
-https://home-assistant.io/components/media_player.braviatv/
+https://github.com/dilruacs/media_player.sony
 """
 import logging
 import voluptuous as vol
