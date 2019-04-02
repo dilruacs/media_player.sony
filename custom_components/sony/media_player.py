@@ -256,6 +256,7 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
 
     def media_play(self):
         """Send play command."""
+        _LOGGER.debug(self.sonydevice.commands)
         self._playing = True
         self.sonydevice.play()
 
@@ -274,5 +275,4 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
 
     def media_stop(self):
         """Send stop command."""
-        _LOGGER.debug(self.sonydevice.commands)
         self.sonydevice.stop()
