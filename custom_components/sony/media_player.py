@@ -4,7 +4,6 @@ Support for interface with a Sony MediaPlayer TV.
 For more details about this platform, please refer to the documentation at
 https://home-assistant.io/components/media_player.braviatv/
 """
-import functools
 import logging
 import voluptuous as vol
 
@@ -13,8 +12,8 @@ from homeassistant.components.media_player import (
 from homeassistant.components.media_player.const import (
     SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK, SUPPORT_TURN_ON,
     SUPPORT_TURN_OFF, SUPPORT_PLAY, SUPPORT_PLAY_MEDIA, SUPPORT_STOP)
-from homeassistant.const import (CONF_HOST, CONF_NAME, STATE_OFF, STATE_ON,
-    STATE_PLAYING, STATE_PAUSED)
+from homeassistant.const import (
+    CONF_HOST, CONF_NAME, STATE_OFF, STATE_ON, STATE_PLAYING, STATE_PAUSED)
 import homeassistant.helpers.config_validation as cv
 
 from homeassistant.util.json import load_json, save_json
@@ -80,7 +79,6 @@ def setup_sonymediaplayer(config, pin, hass, add_devices):
 
     if pin is None:
         request_configuration(config, hass, add_devices)
-        return
     else:
         # If we came here and configuring this host, mark as done
         if host in _CONFIGURING:
@@ -179,7 +177,7 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
         try:
             self.sonydevice.update_service_urls()
             self.update()
-        except Exception as exception_instance:  # pylint: disable=broad-except
+        except:
             self._state = STATE_OFF
 
     def update(self):
@@ -187,8 +185,8 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
         if not self.sonydevice.get_power_status():
             self._state = STATE_OFF
             return
-        else:
-            self._state = STATE_ON
+
+        self._state = STATE_ON
 
         # Retrieve the latest data.
         try:
