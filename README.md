@@ -36,11 +36,12 @@ media_player:
 
 **Configuration variables**
 
-key | description
+Key | Description
 :--- | :---
 **platform (Required)** | The platform name (`sony`)
 **host (Required)** | IP Address or hostname of the device
 **name (Optional)** | Descriptive name for the device
+**broadcast_address (Optional)** | Broadcast address to send WOL magic packet to
 
 ## Pair a device
 
