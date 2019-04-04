@@ -30,6 +30,8 @@ DEFAULT_NAME = 'Sony Media Player'
 
 NICKNAME = 'Home Assistant'
 
+CONF_BROADCAST_ADDRESS = 'broadcast_address'
+
 # Map ip to request id for configuring
 _CONFIGURING = {}
 
@@ -43,6 +45,7 @@ SUPPORT_SONY = SUPPORT_PAUSE | \
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
     vol.Required(CONF_NAME, default=DEFAULT_NAME): cv.string,
+    vol.Optional(CONF_BROADCAST_ADDRESS): cv.string,
 })
 
 
@@ -50,6 +53,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the Sony Media Player platform."""
     host = config.get(CONF_HOST)
+    broadcast = config.get(CONF_BROADCAST_ADDRESS)
 
     if host is None:
         return
@@ -64,7 +68,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         if host_ip == host:
             device = SonyDevice.load_from_json(host_config['device'])
             hass_device = SonyMediaPlayerDevice(
-                host, device.nickname, device.pin, device.mac)
+                host, device.nickname, device.pin, device.mac, broadcast)
             hass_device.sonydevice = device
             add_devices([hass_device])
             return
@@ -155,7 +159,7 @@ def request_configuration(config, hass, add_devices):
 class SonyMediaPlayerDevice(MediaPlayerDevice):
     """Representation of a Sony mediaplayer."""
 
-    def __init__(self, host, name, pin, mac=None):
+    def __init__(self, host, name, pin, mac=None, broadcast=None):
         """
         Initialize the Sony mediaplayer device.
 
@@ -164,6 +168,7 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
         from sonyapilib.device import SonyDevice
 
         self._pin = pin
+        self._broadcast = broadcast
         self.sonydevice = SonyDevice(host, name)
         self._name = name
         self._state = STATE_OFF
@@ -241,7 +246,7 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
 
     def turn_on(self):
         """Turn the media player on."""
-        self.sonydevice.power(True)
+        self.sonydevice.power(True, self._broadcast)
 
     def turn_off(self):
         """Turn off media player."""
