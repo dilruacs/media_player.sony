@@ -20,7 +20,7 @@ from homeassistant.util.json import load_json, save_json
 
 VERSION = '0.1.0'
 
-REQUIREMENTS = ['sonyapilib==0.3.11']
+REQUIREMENTS = ['git+https://github.com/dilruacs/sonyapilib.git@v4']
 
 SONY_CONFIG_FILE = 'sony.conf'
 
@@ -157,9 +157,11 @@ def request_configuration(config, hass, add_devices):
 
 
 class SonyMediaPlayerDevice(MediaPlayerDevice):
+    # pylint: disable=too-many-instance-attributes
     """Representation of a Sony mediaplayer."""
 
     def __init__(self, host, name, pin, mac=None, broadcast=None):
+        # pylint: disable=too-many-arguments
         """
         Initialize the Sony mediaplayer device.
 
