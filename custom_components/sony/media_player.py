@@ -20,7 +20,7 @@ from homeassistant.util.json import load_json, save_json
 
 VERSION = '0.1.0'
 
-REQUIREMENTS = ['git+https://github.com/dilruacs/sonyapilib.git@v4']
+REQUIREMENTS = ['sonyapilib==0.4.0']
 
 SONY_CONFIG_FILE = 'sony.conf'
 
