@@ -53,7 +53,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the Sony Media Player platform."""
     host = config.get(CONF_HOST)
-    broadcast = config.get(CONF_BROADCAST_ADDRESS)
 
     if host is None:
         return
@@ -128,7 +127,7 @@ def request_configuration(config, hass, add_devices):
         # if we have a valid pin
         if pin == '0000' or pin is None or pin == '':
             register_result = sony_device.register()
- 
+
             if register_result == AuthenticationResult.SUCCESS:
                 authenticated = True
             elif register_result == AuthenticationResult.PIN_NEEDED:
@@ -136,7 +135,7 @@ def request_configuration(config, hass, add_devices):
                 return
             else:
                 _LOGGER.error("An unknown error occured during registration")
-        
+
         authenticated = sony_device.send_authentication(pin)
         if authenticated:
             setup_sonymediaplayer(config, sony_device, hass, add_devices)
@@ -241,7 +240,7 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
 
     def turn_on(self):
         """Turn the media player on."""
-        self.sonydevice.power(True, self._broadcast)
+        self.sonydevice.power(True)
 
     def turn_off(self):
         """Turn off media player."""
