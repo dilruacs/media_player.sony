@@ -241,7 +241,7 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
 
     def turn_on(self):
         """Turn the media player on."""
-        self.sonydevice.power(True)
+        self.sonydevice.power(True, self._broadcast)
 
     def turn_off(self):
         """Turn off media player."""
