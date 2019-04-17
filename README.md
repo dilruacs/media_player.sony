@@ -40,8 +40,12 @@ key | description
 :--- | :---
 **platform (Required)** | The platform name (`sony`)
 **host (Required)** | IP Address or hostname of the device
-**name (Optional)** | Descriptive name for the device
+**name (Required)** | Descriptive name for the device
+**broadcast (optional)** | The broadcast ip of the subnet
 
 ## Pair a device
 
 You will need to configure your device to allow the Home Assistant for remote usage. To do that, ensure that your device is turned on. Open the configuration popup on Home Assistant and enter a random PIN (for example 0000). After that, the device will show you a PIN and Home Assistant will allow you to re-enter that PIN. Enter the PIN shown on your TV and Home Assistant will be able to control your Sony device.
+
+# Attribution
+This component is based on https://github.com/alexmohr/home-assistant/blob/dev/homeassistant/components/media_player/sony.py

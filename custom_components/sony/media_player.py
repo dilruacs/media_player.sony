@@ -20,7 +20,7 @@ from homeassistant.util.json import load_json, save_json
 
 VERSION = '0.1.0'
 
-REQUIREMENTS = ['sonyapilib==0.3.11']
+REQUIREMENTS = ['sonyapilib==0.4.0']
 
 SONY_CONFIG_FILE = 'sony.conf'
 
@@ -29,6 +29,8 @@ CLIENTID_PREFIX = 'HomeAssistant'
 DEFAULT_NAME = 'Sony Media Player'
 
 NICKNAME = 'Home Assistant'
+
+CONF_BROADCAST_ADDRESS = 'broadcast_address'
 
 # Map ip to request id for configuring
 _CONFIGURING = {}
@@ -43,6 +45,7 @@ SUPPORT_SONY = SUPPORT_PAUSE | \
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
     vol.Required(CONF_NAME, default=DEFAULT_NAME): cv.string,
+    vol.Optional(CONF_BROADCAST_ADDRESS): cv.string,
 })
 
 
@@ -50,6 +53,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the Sony Media Player platform."""
     host = config.get(CONF_HOST)
+    broadcast = config.get(CONF_BROADCAST_ADDRESS)
 
     if host is None:
         return
@@ -63,21 +67,20 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         host_ip, host_config = sony_config.popitem()
         if host_ip == host:
             device = SonyDevice.load_from_json(host_config['device'])
-            hass_device = SonyMediaPlayerDevice(
-                host, device.nickname, device.pin, device.mac)
-            hass_device.sonydevice = device
+            hass_device = SonyMediaPlayerDevice(device)
             add_devices([hass_device])
             return
 
     setup_sonymediaplayer(config, pin, hass, add_devices)
 
 
-def setup_sonymediaplayer(config, pin, hass, add_devices):
+def setup_sonymediaplayer(config, sony_device, hass, add_devices):
     """Set up a Sony Media Player based on host parameter."""
     host = config.get(CONF_HOST)
     name = config.get(CONF_NAME)
+    broadcast = config.get(CONF_BROADCAST_ADDRESS)
 
-    if pin is None:
+    if sony_device is None:
         request_configuration(config, hass, add_devices)
     else:
         # If we came here and configuring this host, mark as done
@@ -87,7 +90,9 @@ def setup_sonymediaplayer(config, pin, hass, add_devices):
             configurator.request_done(request_id)
             _LOGGER.info("Discovery configuration done")
 
-        hass_device = SonyMediaPlayerDevice(host, name, pin)
+        if broadcast:
+            sony_device.broadcast = broadcast
+        hass_device = SonyMediaPlayerDevice(sony_device)
 
         # Save config, we need the mac address to support wake on LAN
         save_json(
@@ -112,32 +117,29 @@ def request_configuration(config, hass, add_devices):
 
     def sony_configuration_callback(data):
         """Handle the entry of user PIN."""
-        from sonyapilib.device import SonyDevice, AuthenicationResult
+        from sonyapilib.device import SonyDevice, AuthenticationResult
 
         pin = data.get('pin')
         sony_device = SonyDevice(host, name)
 
-        auth_mode = sony_device.get_action("register").mode
         authenticated = False
 
         # make sure we only send the authentication to the device
         # if we have a valid pin
         if pin == '0000' or pin is None or pin == '':
             register_result = sony_device.register()
-            if register_result == AuthenicationResult.SUCCESS:
+ 
+            if register_result == AuthenticationResult.SUCCESS:
                 authenticated = True
-            elif register_result == AuthenicationResult.PIN_NEEDED:
+            elif register_result == AuthenticationResult.PIN_NEEDED:
                 # return so next call has the correct pin
                 return
             else:
                 _LOGGER.error("An unknown error occured during registration")
-
-        # devices below version 3 do not require a pin.
-        if auth_mode > 2:
-            authenticated = sony_device.send_authentication(pin)
-
+        
+        authenticated = sony_device.send_authentication(pin)
         if authenticated:
-            setup_sonymediaplayer(config, pin, hass, add_devices)
+            setup_sonymediaplayer(config, sony_device, hass, add_devices)
         else:
             request_configuration(config, hass, add_devices)
 
@@ -153,9 +155,10 @@ def request_configuration(config, hass, add_devices):
 
 
 class SonyMediaPlayerDevice(MediaPlayerDevice):
+    # pylint: disable=too-many-instance-attributes
     """Representation of a Sony mediaplayer."""
 
-    def __init__(self, host, name, pin, mac=None):
+    def __init__(self, sony_device):
         """
         Initialize the Sony mediaplayer device.
 
@@ -163,19 +166,16 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
         """
         from sonyapilib.device import SonyDevice
 
-        self._pin = pin
-        self.sonydevice = SonyDevice(host, name)
-        self._name = name
+        self.sonydevice = sony_device
         self._state = STATE_OFF
         self._muted = False
         self._id = None
         self._playing = False
-
-        self.sonydevice.pin = pin
-        self.sonydevice.mac = mac
+        _LOGGER.error(sony_device.pin)
+        _LOGGER.error(sony_device.client_id)
+        
 
         try:
-            self.sonydevice.update_service_urls()
             self.update()
         except Exception:  # pylint: disable=broad-except
             self._state = STATE_OFF
@@ -210,7 +210,7 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
     @property
     def name(self):
         """Return the name of the device."""
-        return self._name
+        return self.sonydevice.nickname
 
     @property
     def state(self):
@@ -256,12 +256,13 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
 
     def media_play(self):
         """Send play command."""
-        self._state = STATE_PLAYING
+        _LOGGER.debug(self.sonydevice.commands)
+        self._playing = True
         self.sonydevice.play()
 
     def media_pause(self):
         """Send media pause command to media player."""
-        self._state = STATE_PAUSED
+        self._playing = False
         self.sonydevice.pause()
 
     def media_next_track(self):
