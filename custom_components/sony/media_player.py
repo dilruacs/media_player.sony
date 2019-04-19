@@ -112,7 +112,7 @@ def request_configuration(config, hass, add_devices):
 
     def sony_configuration_callback(data):
         """Handle the entry of user PIN."""
-        from sonyapilib.device import SonyDevice, AuthenicationResult
+        from sonyapilib.device import SonyDevice, AuthenticationResult
 
         pin = data.get('pin')
         sony_device = SonyDevice(host, name)
@@ -124,9 +124,9 @@ def request_configuration(config, hass, add_devices):
         # if we have a valid pin
         if pin == '0000' or pin is None or pin == '':
             register_result = sony_device.register()
-            if register_result == AuthenicationResult.SUCCESS:
+            if register_result == AuthenticationResult.SUCCESS:
                 authenticated = True
-            elif register_result == AuthenicationResult.PIN_NEEDED:
+            elif register_result == AuthenticationResult.PIN_NEEDED:
                 # return so next call has the correct pin
                 return
             else:
