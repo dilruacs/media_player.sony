@@ -127,7 +127,6 @@ def request_configuration(config, hass, add_devices):
         # if we have a valid pin
         if pin == '0000' or pin is None or pin == '':
             register_result = sony_device.register()
-
             if register_result == AuthenticationResult.SUCCESS:
                 authenticated = True
             elif register_result == AuthenticationResult.PIN_NEEDED:
