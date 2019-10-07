@@ -18,7 +18,7 @@ import homeassistant.helpers.config_validation as cv
 
 from homeassistant.util.json import load_json, save_json
 
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 REQUIREMENTS = ['sonyapilib==0.4.1']
 
@@ -76,7 +76,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 def setup_sonymediaplayer(config, sony_device, hass, add_devices):
     """Set up a Sony Media Player based on host parameter."""
     host = config.get(CONF_HOST)
-    name = config.get(CONF_NAME)
     broadcast = config.get(CONF_BROADCAST_ADDRESS)
 
     if sony_device is None:
@@ -162,8 +161,6 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
 
         Mac address is optional but neccessary for wake on LAN
         """
-        from sonyapilib.device import SonyDevice
-
         self.sonydevice = sony_device
         self._state = STATE_OFF
         self._muted = False
@@ -171,7 +168,6 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
         self._playing = False
         _LOGGER.error(sony_device.pin)
         _LOGGER.error(sony_device.client_id)
-        
 
         try:
             self.update()
