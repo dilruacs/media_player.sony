@@ -1,4 +1,4 @@
-![Travis-CI](https://travis-ci.org/dilruacs/media_player.sony.svg?branch=master)
+[![Build Status](https://travis-ci.org/alexmohr/media_player.sony.svg?branch=master)](https://travis-ci.org/alexmohr/media_player.sony)
 
 # media_player.sony
 
