@@ -18,7 +18,7 @@ import homeassistant.helpers.config_validation as cv
 
 from homeassistant.util.json import load_json, save_json
 
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 REQUIREMENTS = ['sonyapilib==0.4.1']
 
@@ -171,7 +171,6 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
         self._playing = False
         _LOGGER.error(sony_device.pin)
         _LOGGER.error(sony_device.client_id)
-        
 
         try:
             self.update()
