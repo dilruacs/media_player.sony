@@ -299,4 +299,4 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
         
     def mute_volume(self, mute):
         """Send stop command."""
-        self.sonydevice.mute_volume()
+        self.sonydevice.mute()
