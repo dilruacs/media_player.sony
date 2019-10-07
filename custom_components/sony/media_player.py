@@ -20,7 +20,7 @@ from homeassistant.util.json import load_json, save_json
 
 VERSION = '0.1.0'
 
-REQUIREMENTS = ['sonyapilib==0.4.0']
+REQUIREMENTS = ['sonyapilib==0.4.1']
 
 SONY_CONFIG_FILE = 'sony.conf'
 
@@ -273,15 +273,16 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
 
     def media_stop(self):
         """Send stop command."""
-        self.sonydevice.stop()    
+        self.sonydevice.stop()
+
     def volume_up(self):
         """Send stop command."""
         self.sonydevice.volume_up()
-        
+
     def volume_down(self):
         """Send stop command."""
         self.sonydevice.volume_down()
-        
+
     def mute_volume(self, mute):
         """Send stop command."""
         self.sonydevice.mute()
