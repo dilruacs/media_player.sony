@@ -11,7 +11,8 @@ from homeassistant.components.media_player import (
     MediaPlayerDevice, PLATFORM_SCHEMA)
 from homeassistant.components.media_player.const import (
     SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK, SUPPORT_TURN_ON,
-    SUPPORT_TURN_OFF, SUPPORT_PLAY, SUPPORT_PLAY_MEDIA, SUPPORT_STOP)
+    SUPPORT_TURN_OFF, SUPPORT_PLAY, SUPPORT_PLAY_MEDIA, SUPPORT_STOP, 
+    SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_STEP)
 from homeassistant.const import (
     CONF_HOST, CONF_NAME, STATE_OFF, STATE_ON, STATE_PLAYING, STATE_PAUSED)
 import homeassistant.helpers.config_validation as cv
@@ -40,7 +41,8 @@ _LOGGER = logging.getLogger(__name__)
 SUPPORT_SONY = SUPPORT_PAUSE | \
                  SUPPORT_PREVIOUS_TRACK | SUPPORT_NEXT_TRACK | \
                  SUPPORT_TURN_ON | SUPPORT_TURN_OFF | \
-                 SUPPORT_PLAY | SUPPORT_PLAY_MEDIA | SUPPORT_STOP
+                 SUPPORT_PLAY | SUPPORT_PLAY_MEDIA | SUPPORT_STOP | \
+                 SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_STEP
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
@@ -169,9 +171,14 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
         self._muted = False
         self._id = None
         self._playing = False
+        
+        self._min_volume = 0
+        self._max_volume = 1
+        self._volume = 0.5
+        
         _LOGGER.error(sony_device.pin)
         _LOGGER.error(sony_device.client_id)
-        
+
 
         try:
             self.update()
@@ -236,6 +243,13 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
     def media_duration(self):
         """Duration of current playing media in seconds."""
         return ""
+        
+    @property
+    def volume_level(self):
+        """Volume level of the media player (0..1)."""
+        if self._volume is not None:
+            return self._volume
+        return None
 
     def turn_on(self):
         """Turn the media player on."""
@@ -274,3 +288,15 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
     def media_stop(self):
         """Send stop command."""
         self.sonydevice.stop()
+    
+    def volume_up(self):
+        """Send stop command."""
+        self.sonydevice.volume_up()
+        
+    def volume_down(self):
+        """Send stop command."""
+        self.sonydevice.volume_down()
+        
+    def mute_volume(self, mute):
+        """Send stop command."""
+        self.sonydevice.mute_volume()
