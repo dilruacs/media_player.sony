@@ -76,7 +76,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 def setup_sonymediaplayer(config, sony_device, hass, add_devices):
     """Set up a Sony Media Player based on host parameter."""
     host = config.get(CONF_HOST)
-    name = config.get(CONF_NAME)
     broadcast = config.get(CONF_BROADCAST_ADDRESS)
 
     if sony_device is None:
@@ -162,8 +161,6 @@ class SonyMediaPlayerDevice(MediaPlayerDevice):
 
         Mac address is optional but neccessary for wake on LAN
         """
-        from sonyapilib.device import SonyDevice
-
         self.sonydevice = sony_device
         self._state = STATE_OFF
         self._muted = False
