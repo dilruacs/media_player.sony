@@ -12,7 +12,7 @@ This is a limitation of the Sony Firmware, the device will not react properly to
 To get started put `/custom_components/sony/media_player.py` here: `<config_directory>/custom_components/sony/media_player.py`
 When using home assistant supervised put the  contents of this repo into ````/usr/share/hassio/homeassistant/````
 
-**Using custom_updater (optional, and deprecated)*
+**Using custom_updater (optional, and deprecated)**
 
 - Get and install `custom_updater` from here: https://github.com/custom-components/custom_updater
 - Use the following configuration snippet:
