@@ -120,9 +120,9 @@ def request_configuration(config, hass, add_devices):
     """Request configuration steps from the user."""
     host = config.get(CONF_HOST)
     name = config.get(CONF_NAME)
-    app_port=config.get(CONF_APP_PORT)
-    dmr_port=config.get(CONF_DMR_PORT)
-    ircc_port=config.get(CONF_IRCC_PORT)
+    app_port = config.get(CONF_APP_PORT)
+    dmr_port = config.get(CONF_DMR_PORT)
+    ircc_port = config.get(CONF_IRCC_PORT)
 
     configurator = hass.components.configurator
 
