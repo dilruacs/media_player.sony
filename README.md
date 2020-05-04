@@ -54,7 +54,7 @@ Devices listed here configure the ports different. This list is not complete. If
 
 Device | App Port | Dmr Port | Ircc
 :--- | : ---
-BDP-S590 | 52323 | 50202 | 50001
+BDP-S590 | 52323 | 50202 | 52323
 
 ## Pair a device
 
