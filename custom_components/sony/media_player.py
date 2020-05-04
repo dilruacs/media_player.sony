@@ -37,6 +37,7 @@ CONF_BROADCAST_ADDRESS = 'broadcast_address'
 CONF_APP_PORT = 'app_port'
 CONF_DMR_PORT = 'dmr_port'
 CONF_IRCC_PORT = 'ircc_port'
+CONF_PSK = 'psk'
 
 DEFAULT_APP_PORT = 50202
 DEFAULT_DMR_PORT = 52323
@@ -61,7 +62,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_APP_PORT, default=DEFAULT_APP_PORT): cv.port,
     vol.Optional(CONF_DMR_PORT, default=DEFAULT_DMR_PORT): cv.port,
     vol.Optional(CONF_IRCC_PORT, default=DEFAULT_IRCC_PORT): cv.port,
-
+    vol.Optional(CONF_PSK, default=None): cv.string,
 })
 
 
@@ -123,6 +124,7 @@ def request_configuration(config, hass, add_devices):
     app_port = config.get(CONF_APP_PORT)
     dmr_port = config.get(CONF_DMR_PORT)
     ircc_port = config.get(CONF_IRCC_PORT)
+    psk = config.get(CONF_PSK)
 
     configurator = hass.components.configurator
 
@@ -137,7 +139,9 @@ def request_configuration(config, hass, add_devices):
         from sonyapilib.device import SonyDevice, AuthenticationResult
 
         pin = data.get('pin')
-        sony_device = SonyDevice(host, name, app_port, dmr_port, ircc_port)
+        sony_device = SonyDevice(host, name,
+                psk = psk, app_port = app_port,
+                dmr_port = dmr_port, ircc_port = ircc_port)
 
         authenticated = False
 
