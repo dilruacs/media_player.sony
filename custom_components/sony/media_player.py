@@ -112,7 +112,7 @@ def setup_sonymediaplayer(config, sony_device, hass, add_devices):
         # Save config, we need the mac address to support wake on LAN
         sony_config = load_json(hass.config.path(SONY_CONFIG_FILE))
         sony_config.pushitem({host: {
-                'device': hass_device.sonydevice.save_to_json()}})
+            'device': hass_device.sonydevice.save_to_json()}})
         save_json(
             hass.config.path(SONY_CONFIG_FILE), sony_config)
 
