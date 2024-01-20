@@ -1,0 +1,9 @@
+{
+  "domain": "sony",
+  "name": "Sony Legacy API",
+  "documentation": "https://github.com/alexmohr/media_player.sony",
+  "dependencies": [],
+  "codeowners": [],
+  "version": "0.1.1",
+  "requirements": ["sonyapilib==0.5.0"]
+}

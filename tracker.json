@@ -1,12 +1,12 @@
 {
     "media_player.sony": {
-        "version": "0.1.0",
+        "version": "0.1.1",
         "local_location": "/custom_components/sony/__init__.py",
-        "remote_location": "https://raw.githubusercontent.com/dilruacs/media_player.sony/master/custom_components/sony/__init__.py",
-        "visit_repo": "https://github.com/dilruacs/media_player.sony",
-        "changelog": "https://github.com/dilruacs/media_player.sony/releases/latest",
+        "remote_location": "https://raw.githubusercontent.com/alexmohr/media_player.sony/master/custom_components/sony/__init__.py",
+        "visit_repo": "https://github.com/alexmohr/media_player.sony",
+        "changelog": "https://github.com/alexmohr/media_player.sony/releases/latest",
         "resources": [
-            "https://raw.githubusercontent.com/dilruacs/media_player.sony/master/custom_components/sony/media_player.py"
+            "https://raw.githubusercontent.com/alexmohr/media_player.sony/master/custom_components/sony/media_player.py"
         ]
     }
 }

@@ -1,21 +1,27 @@
 """
-Support for interface with a Sony MediaPlayer TV.
+Support for interface with a Sony Remote.
 
 For more details about this platform, please refer to the documentation at
 https://github.com/dilruacs/media_player.sony
 """
+from __future__ import annotations
+
 import logging
+import time
+from typing import Iterable, Any
 from sonyapilib.device import SonyDevice
 
 import voluptuous as vol
 
-from homeassistant.components.media_player import (
-    MediaPlayerEntity, PLATFORM_SCHEMA)
-
-from homeassistant.components.media_player.const import (
-    SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK, SUPPORT_TURN_ON,
-    SUPPORT_TURN_OFF, SUPPORT_PLAY, SUPPORT_PLAY_MEDIA, SUPPORT_STOP,
-    SUPPORT_VOLUME_MUTE, SUPPORT_VOLUME_STEP)
+from homeassistant.components.remote import (
+    ATTR_DELAY_SECS,
+    ATTR_HOLD_SECS,
+    ATTR_NUM_REPEATS,
+    DEFAULT_DELAY_SECS,
+    DEFAULT_HOLD_SECS,
+    DEFAULT_NUM_REPEATS,
+    RemoteEntity,
+    PLATFORM_SCHEMA, RemoteEntityFeature)
 
 from homeassistant.const import (
     CONF_HOST, CONF_NAME, STATE_OFF, STATE_ON, STATE_PLAYING, STATE_PAUSED)
@@ -23,8 +29,7 @@ import homeassistant.helpers.config_validation as cv
 
 from homeassistant.util.json import load_json, save_json
 
-
-VERSION = '0.1.3'
+VERSION = '0.0.1'
 
 REQUIREMENTS = ['sonyapilib==0.4.3']
 
@@ -32,7 +37,7 @@ SONY_CONFIG_FILE = 'sony.conf'
 
 CLIENTID_PREFIX = 'HomeAssistant'
 
-DEFAULT_NAME = 'Sony Media Player'
+DEFAULT_NAME = 'Sony Remote'
 
 NICKNAME = 'Home Assistant'
 
@@ -50,12 +55,6 @@ _CONFIGURING = {}
 
 _LOGGER = logging.getLogger(__name__)
 
-SUPPORT_SONY = SUPPORT_PAUSE | \
-    SUPPORT_PREVIOUS_TRACK | SUPPORT_NEXT_TRACK | \
-    SUPPORT_TURN_ON | SUPPORT_TURN_OFF | \
-    SUPPORT_PLAY | SUPPORT_PLAY_MEDIA | SUPPORT_STOP | \
-    SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_STEP
-
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
     vol.Required(CONF_NAME, default=DEFAULT_NAME): cv.string,
@@ -68,7 +67,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 # pylint: disable=unused-argument
 def setup_platform(hass, config, add_devices, discovery_info=None):
-    """Set up the Sony Media Player platform."""
+    """Set up the Sony Remote platform."""
     host = config.get(CONF_HOST)
 
     if host is None:
@@ -82,14 +81,14 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         host_ip, host_config = sony_config.popitem()
         if host_ip == host:
             device = SonyDevice.load_from_json(host_config)
-            hass_device = SonyMediaPlayerEntity(device)
+            hass_device = SonyRemoteEntity(device)
             add_devices([hass_device])
             return
 
-    setup_sonymediaplayer(config, pin, hass, add_devices)
+    setup_sonyremote(config, pin, hass, add_devices)
 
 
-def setup_sonymediaplayer(config, sony_device, hass, add_devices):
+def setup_sonyremote(config, sony_device, hass, add_devices):
     """Set up a Sony Media Player based on host parameter."""
     host = config.get(CONF_HOST)
     broadcast = config.get(CONF_BROADCAST_ADDRESS)
@@ -107,7 +106,7 @@ def setup_sonymediaplayer(config, sony_device, hass, add_devices):
         if broadcast:
             sony_device.broadcast = broadcast
 
-        hass_device = SonyMediaPlayerEntity(sony_device)
+        hass_device = SonyRemoteEntity(sony_device)
         config[host] = hass_device.sonydevice.save_to_json()
 
         # Save config, we need the mac address to support wake on LAN
@@ -158,7 +157,7 @@ def request_configuration(config, hass, add_devices):
 
         authenticated = sony_device.send_authentication(pin)
         if authenticated:
-            setup_sonymediaplayer(config, sony_device, hass, add_devices)
+            setup_sonyremote(config, sony_device, hass, add_devices)
         else:
             request_configuration(config, hass, add_devices)
 
@@ -173,9 +172,11 @@ def request_configuration(config, hass, add_devices):
     )
 
 
-class SonyMediaPlayerEntity(MediaPlayerEntity):
+class SonyRemoteEntity(RemoteEntity):
     # pylint: disable=too-many-instance-attributes
     """Representation of a Sony mediaplayer."""
+    _attr_supported_features: RemoteEntityFeature = RemoteEntityFeature(0)
+    sonydevice: SonyDevice
 
     def __init__(self, sony_device):
         """
@@ -237,24 +238,7 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
     @property
     def supported_features(self):
         """Flag media player features that are supported."""
-        return SUPPORT_SONY
-
-    @property
-    def media_title(self):
-        """Title of current playing media."""
-        # the device used for testing does not send any
-        # information about the media which is played
-        return ""
-
-    @property
-    def media_content_id(self):
-        """Content ID of current playing media."""
-        return ""
-
-    @property
-    def media_duration(self):
-        """Duration of current playing media in seconds."""
-        return ""
+        return self._attr_supported_features
 
     def turn_on(self):
         """Turn the media player on."""
@@ -264,44 +248,27 @@ class SonyMediaPlayerEntity(MediaPlayerEntity):
         """Turn off media player."""
         self.sonydevice.power(False)
 
-    def media_play_pause(self):
-        """Simulate play pause media player."""
-        if self._playing:
-            self.media_pause()
+    def toggle(self, activity: str = None, **kwargs):
+        """Toggle a device."""
+        if self._state == STATE_ON:
+            self.turn_off()
         else:
-            self.media_play()
+            self.turn_on()
 
-    def media_play(self):
-        """Send play command."""
-        _LOGGER.debug(self.sonydevice.commands)
-        self._playing = True
-        self.sonydevice.play()
+    def send_command(self, command: Iterable[str], **kwargs: Any) -> None:
+        """Send commands to one device."""
+        num_repeats = kwargs.get(ATTR_NUM_REPEATS, DEFAULT_NUM_REPEATS)
+        delay_secs = kwargs.get(ATTR_DELAY_SECS, DEFAULT_DELAY_SECS)
+        hold_secs = kwargs.get(ATTR_HOLD_SECS, DEFAULT_HOLD_SECS)
 
-    def media_pause(self):
-        """Send media pause command to media player."""
-        self._playing = False
-        self.sonydevice.pause()
+        _LOGGER.debug("async_send_command %s %d repeats %d delay", ''.join(list(command)), num_repeats, delay_secs)
 
-    def media_next_track(self):
-        """Send next track command."""
-        self.sonydevice.next()
-
-    def media_previous_track(self):
-        """Send the previous track command."""
-        self.sonydevice.prev()
-
-    def media_stop(self):
-        """Send stop command."""
-        self.sonydevice.stop()
-
-    def volume_up(self):
-        """Send stop command."""
-        self.sonydevice.volume_up()
-
-    def volume_down(self):
-        """Send stop command."""
-        self.sonydevice.volume_down()
-
-    def mute_volume(self, mute):
-        """Send stop command."""
-        self.sonydevice.mute()
+        for _ in range(num_repeats):
+            for single_command in command:
+                # Not supported : hold and release modes
+                # if hold_secs > 0:
+                #     self.sonydevice._send_command(single_command)
+                #     time.sleep(hold_secs)
+                # else:
+                self.sonydevice._send_command(single_command)
+                time.sleep(delay_secs)
