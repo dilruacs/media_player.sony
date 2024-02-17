@@ -75,7 +75,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     pin = None
     sony_config = load_json(hass.config.path(SONY_CONFIG_FILE))
-
+    logger = logging.getLogger('sonyapilib.device')
+    logger.setLevel(logging.CRITICAL)
     while sony_config:
         # Set up a configured TV
         host_ip, host_config = sony_config.popitem()

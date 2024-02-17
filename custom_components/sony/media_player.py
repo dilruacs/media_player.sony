@@ -80,6 +80,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         return
 
     pin = None
+    logger = logging.getLogger('sonyapilib.device')
+    logger.setLevel(logging.CRITICAL)
     sony_config = load_json(hass.config.path(SONY_CONFIG_FILE))
 
     while sony_config:
