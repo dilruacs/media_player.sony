@@ -1,9 +1,13 @@
 {
   "domain": "sony",
   "name": "Sony Legacy API",
-  "documentation": "https://github.com/alexmohr/media_player.sony",
+  "config_flow": true,
+  "documentation": "https://github.com/albaintor/media_player.sony",
   "dependencies": [],
-  "codeowners": [],
-  "version": "0.1.1",
-  "requirements": ["sonyapilib==0.5.0"]
+  "iot_class": "local_polling",
+  "codeowners": ["@albaintor"],
+  "version": "2.0.0",
+  "requirements": ["sonyapilib==0.5.0"],
+  "ssdp": [],
+  "zeroconf": []
 }
